@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Leituras</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fas fa-book-open"></i> Gerenciador de Leituras</h1>
+            <p>Organize seus livros lidos e sua lista de desejos</p>
+        </header>
+
+        <!-- Formulário para adicionar/editar livros -->
+        <section class="form-section">
+            <h2 id="form-title">Adicionar Novo Livro</h2>
+            <form id="book-form" class="book-form">
+                <div class="form-group">
+                    <label for="book-title">
+                        <i class="fas fa-book"></i>
+                        Título do Livro
+                    </label>
+                    <input type="text" id="book-title" placeholder="Digite o título do livro" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="book-author">
+                        <i class="fas fa-user-edit"></i>
+                        Autor(es)
+                    </label>
+                    <input type="text" id="book-author" placeholder="Digite o nome do autor" required>
+                </div>
+                
+                <div class="form-buttons">
+                    <button type="submit" id="submit-btn">
+                        <i class="fas fa-plus"></i>
+                        Adicionar Livro
+                    </button>
+                    <button type="button" id="cancel-btn" class="cancel-btn" style="display: none;">
+                        <i class="fas fa-times"></i>
+                        Cancelar
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Controles principais -->
+        <section class="controls">
+            <div class="view-controls">
+                <button id="show-all" class="btn-control active">
+                    <i class="fas fa-list"></i>
+                    Todos os Livros
+                </button>
+                <button id="show-to-read" class="btn-control">
+                    <i class="fas fa-bookmark"></i>
+                    Para Ler
+                </button>
+                <button id="show-read" class="btn-control">
+                    <i class="fas fa-check-circle"></i>
+                    Lidos
+                </button>
+            </div>
+            
+            <div class="action-controls">
+                <button id="clear-all" class="btn-danger">
+                    <i class="fas fa-trash-alt"></i>
+                    Limpar Tudo
+                </button>
+            </div>
+        </section>
+
+        <!-- Estatísticas -->
+        <section class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="total-books">0</div>
+                <div class="stat-label">Total de Livros</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="books-read">0</div>
+                <div class="stat-label">Livros Lidos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="books-to-read">0</div>
+                <div class="stat-label">Para Ler</div>
+            </div>
+        </section>
+
+        <!-- Lista de livros -->
+        <section class="books-section">
+            <div class="section-header">
+                <h2 id="list-title">Todos os Livros</h2>
+                <div class="search-container">
+                    <input type="text" id="search-input" placeholder="Buscar livros...">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+            </div>
+            
+            <div id="books-list" class="books-list">
+                <div class="empty-state" id="empty-state">
+                    <i class="fas fa-book-open"></i>
+                    <h3>Nenhum livro encontrado</h3>
+                    <p>Adicione seu primeiro livro usando o formulário acima</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Modal de confirmação -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h3 id="modal-title">Confirmar Ação</h3>
+            <p id="modal-message">Tem certeza que deseja realizar esta ação?</p>
+            <div class="modal-buttons">
+                <button id="modal-confirm" class="btn-danger">Confirmar</button>
+                <button id="modal-cancel" class="btn-secondary">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2024 Gerenciador de Leituras - Projeto de Portfólio</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
