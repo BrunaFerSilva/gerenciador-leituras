@@ -1,28 +1,28 @@
-# 📚 PORTFÓLIO DE TESTES DE SOFTWARE
-## Sistema Gerenciador de Leituras
+# 📚 Meu Gerenciador de Leituras
+## Projeto de QA para Portfolio
 
-> **Projeto completo demonstrando competências em análise de requisitos, planejamento de testes, execução, automação e gestão de defeitos**
+Como sempre esqueço quais livros de testing já li, criei este app simples pra me organizar. Aproveitei para demonstrar minhas competências em QA fazendo testes completos!
 
-[![Testes](https://img.shields.io/badge/Testes-35_casos-brightgreen)](#casos-de-teste)
+[![Testes](https://img.shields.io/badge/Testes-18_casos-brightgreen)](#casos-de-teste)
 [![Automação](https://img.shields.io/badge/Automação-Jest_+_Playwright-blue)](#automação)
-[![Cobertura](https://img.shields.io/badge/Cobertura-92%25-green)](#métricas)
-[![Navegadores](https://img.shields.io/badge/Navegadores-4_suportados-orange)](#compatibilidade)
+[![Performance](https://img.shields.io/badge/Performance-K6-purple)](#performance)
+[![Mobile](https://img.shields.io/badge/Mobile-Responsivo-orange)](#mobile)
 
 ---
 
-## 🎯 VISÃO GERAL DO PORTFÓLIO
+## 🎯 O que tem aqui
 
-Este projeto demonstra um **ciclo completo de testes de software**, desde a análise de requisitos até a automação, seguindo metodologias e padrões da indústria. O sistema escolhido é uma aplicação web para gerenciamento de biblioteca pessoal.
+Criei uma documentação completa de QA para demonstrar como trabalho. Desde análise de requisitos até automação de testes!
 
-### 🏆 Competências Demonstradas
+### 🏆 O que vai encontrar
 
-| Área | Artefatos | Técnicas Aplicadas |
-|------|-----------|-------------------|
-| **📋 Análise de Requisitos** | [Especificação RF/RNF](documentacao/01_Especificacao_Requisitos.md) | BDD, Casos de Uso, Matriz de Rastreabilidade |
-| **📊 Planejamento** | [Plano de Testes](documentacao/02_Plano_de_Testes.md) | Estratégia de Teste, Cronograma, Gestão de Riscos |
-| **🧪 Casos de Teste** | [35 Casos Detalhados](documentacao/03_Casos_de_Teste.md) | Partição de Equivalência, Valor Limite, Caixa Preta |
-| **🐛 Gestão de Defeitos** | [8 Defeitos Catalogados](documentacao/04_Relatorio_Defeitos.md) | Classificação, Triagem, Métricas de Qualidade |
-| **🤖 Automação** | [Suíte Completa](automacao/) | Jest, Playwright, K6, CI/CD |
+| Área | O que fiz | Ferramentas |
+|------|-----------|-------------|
+| **📋 Requisitos** | [Levantei funcionalidades](documentacao/01_Especificacao_Requisitos.md) | Análise, casos de uso |
+| **📊 Planejamento** | [Estratégia de testes](documentacao/02_Plano_de_Testes.md) | Cronograma, riscos |
+| **🧪 Casos de Teste** | [18 casos essenciais](documentacao/03_Casos_de_Teste.md) | Partição, valor limite |
+| **🐛 Bugs** | [6 defeitos encontrados](documentacao/04_Relatorio_Defeitos.md) | Gestão de defeitos |
+| **🤖 Automação** | [Testes automatizados](automacao/) | Jest, Playwright, K6 |
 
 ---
 

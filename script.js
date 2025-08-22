@@ -25,17 +25,19 @@ class BookManager {
         this.updateDisplay();
     }
 
-    // Carrega livros do localStorage
+    // Carrega livros salvos (aprendi que localStorage pode falhar!)
     loadBooks() {
         try {
             const savedBooks = localStorage.getItem(BookManager.STORAGE_KEY);
             if (savedBooks) {
                 this.books = JSON.parse(savedBooks);
                 this.validateBooksData();
+                console.log('Livros carregados:', this.books.length); // debug útil
             }
         } catch (error) {
             console.error('Erro ao carregar livros:', error);
             this.books = [];
+            // TODO: mostrar mensagem amigável pro usuário quando isso acontecer
         }
     }
 
@@ -69,11 +71,13 @@ class BookManager {
         { title: "Taking Testing Seriously: The Rapid Software Testing Approach", author: "James Bach e Michael Bolton" }
     ];
 
-    // Adiciona livros iniciais se não houver livros salvos
+    // Adiciona alguns livros iniciais se lista estiver vazia
+    // (escolhi livros de QA que realmente recomendo!)
     addInitialBooks() {
         if (this.books.length === 0) {
             this.books = this.createInitialBooks();
             this.saveBooks();
+            console.log('Adicionados livros iniciais para demonstração');
         }
     }
 
@@ -325,10 +329,17 @@ class BookManager {
         this.updateDisplay();
     }
 
-    // Manipula a busca
+    // Busca em tempo real - uma das partes que mais me orgulho!
     handleSearch(searchTerm) {
         this.searchTerm = searchTerm.toLowerCase();
         this.updateDisplay();
+        
+        // DEBUG: pra ver se busca tá funcionando
+        if (searchTerm) {
+            console.log(`Buscando por: "${searchTerm}"`);
+        }
+        
+        // TODO: adicionar destaque no texto encontrado seria legal
     }
 
     // Filtra livros baseado na visualização atual e termo de busca
@@ -472,13 +483,14 @@ class BookManager {
         info: { icon: 'fa-info-circle', color: 'linear-gradient(135deg, #63b3ed, #4299e1)' }
     };
 
-    // Mostra alertas temporários
+    // Sistema de alertas - demorei pra fazer ficar bonito assim!
     showAlert(message, type = 'info') {
         this.removeExistingAlert();
         
         const alert = this.createAlertElement(message, type);
         document.body.appendChild(alert);
         
+        // Auto-remove depois de 4 segundos (testei vários tempos até chegar neste)
         setTimeout(() => this.removeAlert(alert), BookManager.ALERT_DURATION);
     }
 

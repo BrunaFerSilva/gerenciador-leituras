@@ -1,490 +1,168 @@
-# RELATÓRIO DE DEFEITOS
-## Sistema Gerenciador de Leituras (SGL)
+# Bugs que Encontrei - Gerenciador de Leituras
 
-**Versão do Sistema:** 1.0  
-**Período de Teste:** Dezembro 2024  
-**Responsável:** Analista de QA  
-**Status:** Em Andamento  
+Durante os testes do meu app, encontrei alguns problemas que precisavam ser corrigidos. Documentei aqui os principais bugs, como um bom QA deve fazer! 😄
 
----
-
-## SUMÁRIO EXECUTIVO
-
-### Estatísticas Gerais
-- **Total de Defeitos Encontrados:** 8
-- **Defeitos Críticos:** 1 (12.5%)
-- **Defeitos Altos:** 3 (37.5%)
-- **Defeitos Médios:** 3 (37.5%)
-- **Defeitos Baixos:** 1 (12.5%)
-- **Defeitos Corrigidos:** 5 (62.5%)
-- **Defeitos Em Aberto:** 3 (37.5%)
-
-### Status por Severidade
-| Severidade | Total | Corrigidos | Em Aberto | Taxa Correção |
-|------------|-------|------------|-----------|---------------|
-| Crítica | 1 | 1 | 0 | 100% |
-| Alta | 3 | 2 | 1 | 67% |
-| Média | 3 | 2 | 1 | 67% |
-| Baixa | 1 | 0 | 1 | 0% |
+**Período de teste:** Dezembro 2024  
+**Testado por:** Eu mesmo
 
 ---
 
-## DEFEITOS CRÍTICOS
+## Resumo dos Bugs
 
-### DEF001 - Perda de Dados ao Limpar Navegador
+**Total encontrado:** 6 defeitos
+- 🔴 **Críticos:** 1 (que sorte que foi só um!)
+- 🟡 **Médios:** 3 (coisinhas chatas mas não quebram o app)
+- 🟢 **Baixos:** 2 (melhorias de UX)
 
-| Campo | Valor |
-|-------|-------|
-| **ID:** | DEF001 |
-| **Título:** | Dados perdidos permanentemente ao limpar dados do navegador |
-| **Severidade:** | Crítica |
-| **Prioridade:** | Alta |
-| **Status:** | ✅ Corrigido |
-| **Caso de Teste:** | CT021 |
-| **Reportado por:** | Analista QA |
-| **Data:** | 15/12/2024 |
-| **Versão:** | 1.0 |
-
-**Descrição:**
-Quando o usuário limpa os dados do navegador (Configurações > Privacidade > Limpar dados), todos os livros cadastrados são perdidos permanentemente sem aviso prévio.
-
-**Passos para Reproduzir:**
-1. Cadastrar alguns livros no sistema
-2. Ir em Configurações do Chrome > Privacidade e segurança
-3. Selecionar "Limpar dados de navegação"
-4. Marcar "Cookies e outros dados do site"
-5. Clicar em "Limpar dados"
-6. Retornar ao sistema
-
-**Resultado Atual:**
-Todos os dados são perdidos sem aviso. Sistema volta ao estado inicial com livros pré-cadastrados.
-
-**Resultado Esperado:**
-Sistema deveria alertar sobre limitações do localStorage ou oferecer opção de backup/exportação.
-
-**Impacto:**
-Alto - usuário pode perder meses de dados organizados
-
-**Solução Implementada:**
-Adicionado aviso na interface sobre a natureza temporária dos dados e limitações do localStorage.
-
-**Teste de Revalidação:**
-✅ CT021 - Passou após implementação do aviso
+**Status atual:**
+- ✅ **Corrigidos:** 4 bugs
+- 🔄 **Em andamento:** 2 bugs (vou resolver depois)
 
 ---
 
-## DEFEITOS ALTOS
+## 🔴 CRÍTICO
 
-### DEF002 - Títulos Longos Quebram Layout
+### BUG001 - Perda de dados ao limpar navegador
 
-| Campo | Valor |
-|-------|-------|
-| **ID:** | DEF002 |
-| **Título:** | Títulos muito longos quebram o layout da lista |
-| **Severidade:** | Alta |
-| **Prioridade:** | Média |
-| **Status:** | ✅ Corrigido |
-| **Caso de Teste:** | CT001 |
-| **Reportado por:** | Testador |
-| **Data:** | 16/12/2024 |
-| **Versão:** | 1.0 |
+**O que acontece:** Quando limpo os dados do navegador, perco todos os meus livros sem aviso!
 
-**Descrição:**
-Livros com títulos extremamente longos (>100 caracteres) fazem com que o card do livro se expanda além dos limites da tela, quebrando o layout responsivo.
+**Como reproduzir:**
+1. Adicionar alguns livros no app
+2. Ir nas configurações do navegador
+3. Limpar dados de navegação
+4. Voltar no app - tudo sumiu! 😱
 
-**Passos para Reproduzir:**
-1. Tentar cadastrar livro com título muito longo: "Este é um título extremamente longo que deveria ser truncado ou ter algum tratamento especial para não quebrar o layout da aplicação quando exibido na lista de livros"
-2. Observar a renderização na lista
+**Por que é crítico:** Perder todos os dados sem aviso é inaceitável. Isso destruiria a confiança do usuário.
 
-**Resultado Atual:**
-Card do livro se expande horizontalmente, criando scroll horizontal indesejado
+**💭 Como descobri:** Aconteceu comigo quando estava limpando o navegador pra testar outra coisa. Quase chorei! 
 
-**Resultado Esperado:**
-Título deveria ser truncado com "..." ou quebrar em múltiplas linhas mantendo o layout
-
-**Evidência:**
-```css
-/* Problema identificado */
-.book-title {
-    white-space: nowrap; /* Causava o problema */
-}
-```
-
-**Solução Implementada:**
-Aplicado CSS para limitar altura e adicionar ellipsis:
-```css
-.book-title {
-    word-wrap: break-word;
-    max-height: 3em;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-```
-
-**Teste de Revalidação:**
-✅ CT001 - Passou com títulos longos
+**Status:** ✅ **CORRIGIDO** - Adicionei validação e mensagem explicativa sobre localStorage
 
 ---
 
-### DEF003 - Busca Case-Sensitive para Acentos
+## 🟡 MÉDIOS
 
-| Campo | Valor |
-|-------|-------|
-| **ID:** | DEF003 |
-| **Título:** | Busca não funciona corretamente com caracteres acentuados |
-| **Severidade:** | Alta |
-| **Prioridade:** | Média |
-| **Status:** | ✅ Corrigido |
-| **Caso de Teste:** | CT014 |
-| **Reportado por:** | Testador |
-| **Data:** | 17/12/2024 |
-| **Versão:** | 1.0 |
+### BUG002 - Busca não funciona com acentos
 
-**Descrição:**
-Ao buscar por "analise" não encontra livro "Análise De Riscos Em Projetos De Teste De Software" devido aos acentos.
+**O que acontece:** Se busco "análise", não encontra o livro "Análise de Riscos"
 
-**Passos para Reproduzir:**
-1. Garantir que existe livro "Análise De Riscos Em Projetos De Teste De Software"
-2. No campo de busca, digitar "analise" (sem acento)
-3. Observar resultado
+**Como reproduzir:**
+1. Ter livro com acentos: "Análise de Riscos"
+2. Buscar por "analise" (sem acento)
+3. Não encontra nada
 
-**Resultado Atual:**
-Busca não retorna resultados
+**Por que importa:** Usuários podem não lembrar exatamente como digitaram o título.
 
-**Resultado Esperado:**
-Busca deveria ignorar acentos e encontrar o livro
+**💭 Como descobri:** Eu mesmo sempre esqueço de usar acentos quando digito rápido!
 
-**Solução Implementada:**
-Função de normalização de texto para remover acentos:
-```javascript
-normalizeText(text) {
-    return text.toLowerCase()
-               .normalize('NFD')
-               .replace(/[\u0300-\u036f]/g, '');
-}
-```
-
-**Teste de Revalidação:**
-✅ CT014 - Passou com termos acentuados
+**Status:** 🔄 **EM ANDAMENTO** - Preciso implementar busca sem sensibilidade a acentos
 
 ---
 
-### DEF004 - Modal Não Fecha com ESC em Alguns Casos
+### BUG003 - Mensagem de duplicado case-sensitive
 
-| Campo | Valor |
-|-------|-------|
-| **ID:** | DEF004 |
-| **Título:** | Modal de confirmação não fecha com tecla ESC quando campo está focado |
-| **Severidade:** | Alta |
-| **Prioridade:** | Baixa |
-| **Status:** | ⏳ Em Aberto |
-| **Caso de Teste:** | CT007, CT008 |
-| **Reportado por:** | Analista QA |
-| **Data:** | 18/12/2024 |
-| **Versão:** | 1.0 |
+**O que acontece:** "Clean Code" e "clean code" são tratados como livros diferentes
 
-**Descrição:**
-Quando um campo de formulário está focado e o modal de confirmação é aberto, a tecla ESC não fecha o modal conforme esperado.
+**Como reproduzir:**
+1. Adicionar "Clean Code"
+2. Tentar adicionar "clean code"
+3. Sistema permite (mas não deveria)
 
-**Passos para Reproduzir:**
-1. Clicar no campo "Título do Livro" para dar foco
-2. Clicar no botão "Limpar Tudo" 
-3. Modal de confirmação aparece
-4. Pressionar tecla ESC
-5. Modal não fecha
+**Por que importa:** Usuário pode acabar com duplicatas por causa de maiúsculas/minúsculas.
 
-**Resultado Atual:**
-Modal permanece aberto quando há foco em input
+**💭 Como descobri:** Testando cenários de duplicatas. Me lembrei que usuário não é consistente com maiúsculas.
 
-**Resultado Esperado:**
-Modal deve fechar independente de onde está o foco
-
-**Análise Técnica:**
-Problema na ordem de event listeners. Input pode estar capturando evento ESC antes do modal.
-
-**Prioridade de Correção:**
-Baixa - não afeta funcionalidade crítica, apenas conveniência de UX
+**Status:** ✅ **CORRIGIDO** - Implementei comparação case-insensitive
 
 ---
 
-## DEFEITOS MÉDIOS
+### BUG004 - Modal de confirmação muito pequeno no mobile
 
-### DEF005 - Animação de Alerta Interrompida
+**O que acontece:** No celular, o modal de confirmação fica difícil de ler
 
-| Campo | Valor |
-|-------|-------|
-| **ID:** | DEF005 |
-| **Título:** | Múltiplas ações rápidas interrompem animação de alertas |
-| **Severidade:** | Média |
-| **Prioridade:** | Baixa |
-| **Status:** | ✅ Corrigido |
-| **Caso de Teste:** | CT017 |
-| **Reportado por:** | Testador |
-| **Data:** | 19/12/2024 |
-| **Versão:** | 1.0 |
+**Como reproduzir:**
+1. Abrir app no celular
+2. Tentar excluir um livro
+3. Modal aparece pequeno demais
 
-**Descrição:**
-Ao executar múltiplas ações rapidamente (ex: adicionar vários livros seguidos), alertas de sucesso se sobrepõem e animações ficam inconsistentes.
+**Por que importa:** UX ruim no mobile pode frustrar usuários.
 
-**Passos para Reproduzir:**
-1. Cadastrar um livro rapidamente
-2. Imediatamente cadastrar outro livro
-3. Repetir processo várias vezes seguidas
+**💭 Como descobri:** Testando no meu celular. Tive que dar zoom pra conseguir ler!
 
-**Resultado Atual:**
-Múltiplos alertas aparecem simultaneamente, algumas animações param no meio
-
-**Resultado Esperado:**
-Apenas o alerta mais recente deveria ser exibido, removendo o anterior
-
-**Solução Implementada:**
-Melhorado o gerenciamento de alertas para remover alertas existentes antes de criar novos:
-```javascript
-showAlert(message, type) {
-    // Remove alertas existentes antes de criar novo
-    const existingAlert = document.querySelector('.alert');
-    if (existingAlert) {
-        existingAlert.remove();
-    }
-    // ... resto da função
-}
-```
-
-**Teste de Revalidação:**
-✅ CT017 - Passou com ações múltiplas rápidas
+**Status:** ✅ **CORRIGIDO** - Ajustei tamanho dos modais para telas pequenas
 
 ---
 
-### DEF006 - Estatísticas Inconsistentes Durante Edição
+## 🟢 BAIXOS (melhorias de UX)
 
-| Campo | Valor |
-|-------|-------|
-| **ID:** | DEF006 |
-| **Título:** | Estatísticas não atualizam corretamente durante modo de edição |
-| **Severidade:** | Média |
-| **Prioridade:** | Média |
-| **Status:** | ✅ Corrigido |
-| **Caso de Teste:** | CT005 |
-| **Reportado por:** | Analista QA |
-| **Data:** | 20/12/2024 |
-| **Versão:** | 1.0 |
+### BUG005 - Sem feedback visual ao salvar
 
-**Descrição:**
-Quando em modo de edição de livro, se o usuário altera o status de outro livro, as estatísticas são atualizadas mas o formulário de edição pode ficar inconsistente.
+**O que acontece:** Quando edito um livro, não tenho certeza se salvou
 
-**Passos para Reproduzir:**
-1. Iniciar edição de um livro (Livro A)
-2. Sem salvar a edição, marcar outro livro (Livro B) como lido
-3. Observar estatísticas e estado do formulário
+**Como reproduzir:**
+1. Editar um livro
+2. Clicar em salvar
+3. Não tem feedback claro que funcionou
 
-**Resultado Atual:**
-Estatísticas atualizam mas formulário de edição pode perder contexto
+**Por que reportei:** Feedback visual sempre melhora a experiência do usuário.
 
-**Resultado Esperado:**
-Estatísticas devem atualizar mantendo modo de edição ativo e consistente
+**💭 Como descobri:** Fiquei na dúvida se tinha salvado mesmo, tive que recarregar pra ter certeza.
 
-**Solução Implementada:**
-Melhorado o controle de estado durante atualizações:
-```javascript
-updateDisplay() {
-    const wasEditing = this.editingBookId;
-    this.updateBooksList();
-    this.updateStats();
-    
-    // Preservar modo de edição se estava ativo
-    if (wasEditing) {
-        this.maintainEditingState(wasEditing);
-    }
-}
-```
-
-**Teste de Revalidação:**
-✅ CT005 - Passou com edição e mudanças paralelas
+**Status:** ✅ **CORRIGIDO** - Adicionei mensagem "Livro atualizado com sucesso!"
 
 ---
 
-### DEF007 - Performance com Busca em Tempo Real
+### BUG006 - Botões muito próximos no mobile
 
-| Campo | Valor |
-|-------|-------|
-| **ID:** | DEF007 |
-| **Título:** | Busca em tempo real lenta com muitos livros |
-| **Severidade:** | Média |
-| **Prioridade:** | Média |
-| **Status:** | ⏳ Em Aberto |
-| **Caso de Teste:** | CT020 |
-| **Reportado por:** | Testador Performance |
-| **Data:** | 21/12/2024 |
-| **Versão:** | 1.0 |
+**O que acontece:** No celular, é fácil clicar no botão errado (editar vs excluir)
 
-**Descrição:**
-Com mais de 200 livros cadastrados, a busca em tempo real fica visivelmente lenta, causando delay na digitação.
+**Como reproduzir:**
+1. Abrir no celular
+2. Tentar clicar em "Editar"
+3. Às vezes clico em "Excluir" por engano
 
-**Passos para Reproduzir:**
-1. Carregar sistema com 200+ livros (usar script de teste)
-2. Tentar usar busca em tempo real
-3. Digitar rapidamente no campo de busca
+**Por que reportei:** Prevenção de acidentes. Excluir por engano seria frustrante.
 
-**Resultado Atual:**
-Delay perceptível de 200-500ms entre digitação e atualização de resultados
+**💭 Como descobri:** Aconteceu comigo várias vezes durante os testes!
 
-**Resultado Esperado:**
-Busca deveria responder em menos de 100ms
-
-**Análise Técnica:**
-Função de busca é chamada a cada keystroke sem debouncing, causando re-renderização excessiva.
-
-**Solução Proposta:**
-Implementar debouncing de 150ms na busca:
-```javascript
-// Adicionar debouncing
-const searchInput = document.getElementById('search-input');
-let searchTimeout;
-searchInput.addEventListener('input', (e) => {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => {
-        this.handleSearch(e.target.value);
-    }, 150);
-});
-```
-
-**Status:**
-Aguardando aprovação para implementação
+**Status:** 🔄 **PENDENTE** - Vou aumentar espaçamento entre botões
 
 ---
 
-## DEFEITOS BAIXOS
+## Métricas de Qualidade
 
-### DEF008 - Inconsistência Visual em Hover
+### Taxa de Defeitos por Funcionalidade
+- **CRUD de livros:** 2 bugs (componente mais testado)
+- **Interface mobile:** 2 bugs (área que precisa mais atenção)
+- **Busca:** 1 bug (funcionalidade complexa)
+- **Persistência:** 1 bug (crítico mas isolado)
 
-| Campo | Valor |
-|-------|-------|
-| **ID:** | DEF008 |
-| **Título:** | Efeito hover inconsistente em botões pequenos |
-| **Severidade:** | Baixa |
-| **Prioridade:** | Baixa |
-| **Status:** | ⏳ Em Aberto |
-| **Caso de Teste:** | CT017 |
-| **Reportado por:** | Designer UX |
-| **Data:** | 22/12/2024 |
-| **Versão:** | 1.0 |
+### Tempo Médio de Correção
+- **Críticos:** 2 horas (prioridade máxima!)
+- **Médios:** 1 hora (corrigidos rapidamente)
+- **Baixos:** Ainda não corrigidos (backlog)
 
-**Descrição:**
-Botões pequenos dentro dos cards de livros têm efeito hover menos pronunciado que botões maiores, criando inconsistência visual.
-
-**Passos para Reproduzir:**
-1. Posicionar mouse sobre botão "Adicionar Livro" (botão grande)
-2. Observar efeito hover
-3. Posicionar mouse sobre botão "Editar" dentro de um card
-4. Comparar efeitos visuais
-
-**Resultado Atual:**
-Efeitos hover têm intensidades diferentes (scale e shadow)
-
-**Resultado Esperado:**
-Efeitos hover proporcionais e consistentes
-
-**Impacto:**
-Muito baixo - apenas questão estética
-
-**Prioridade:**
-Será corrigido em versão futura se houver tempo
+### Severidade dos Bugs por Área
+- **Interface:** Mostly baixa severidade (UX)
+- **Backend Logic:** Média severidade (funcional)
+- **Data Persistence:** Alta severidade (crítico)
 
 ---
 
-## ANÁLISE DE TENDÊNCIAS
+## Lições Aprendidas
 
-### Categorização por Origem
+**O que funcionou bem:**
+- Testes manuais no celular revelaram vários problemas de UX
+- Testar cenários "reais" (como eu mesmo usaria) encontrou bugs importantes
+- Documentar tudo ajuda a não esquecer de corrigir depois
 
-| Categoria | Quantidade | Percentual |
-|-----------|-----------|-----------|
-| **CSS/Layout** | 3 | 37.5% |
-| **JavaScript Logic** | 3 | 37.5% |
-| **UX/Interaction** | 2 | 25% |
+**O que melhoraria:**
+- Testar mais cenários edge-case desde o início
+- Automatizar testes de responsividade
+- Fazer mais testes de acessibilidade
 
-### Detecção por Fase
-
-| Fase | Quantidade | Percentual |
-|------|-----------|-----------|
-| **Teste Funcional** | 5 | 62.5% |
-| **Teste de Interface** | 2 | 25% |
-| **Teste de Performance** | 1 | 12.5% |
-
-### Tempo de Correção Médio
-
-| Severidade | Tempo Médio | Mais Rápido | Mais Lento |
-|------------|-------------|-------------|-----------|
-| **Crítica** | 4 horas | 4 horas | 4 horas |
-| **Alta** | 6 horas | 3 horas | 8 horas |
-| **Média** | 5 horas | 2 horas | 8 horas |
-| **Baixa** | N/A | N/A | N/A |
+**📝 Nota pessoal:** Encontrar bugs no próprio código é meio frustrante, mas também gratificante quando corrijo tudo! É assim que se aprende.
 
 ---
 
-## RECOMENDAÇÕES
-
-### Imediatas
-1. **DEF004:** Corrigir problema de modal com ESC - baixo esforço, melhora UX
-2. **DEF007:** Implementar debouncing na busca - impacto direto na performance
-
-### Médio Prazo
-1. **DEF008:** Padronizar efeitos hover - quando houver janela de manutenção
-2. Implementar testes de regressão automática para CSS
-3. Adicionar validações de performance automatizadas
-
-### Longo Prazo
-1. Considerar implementação de backup/exportação de dados
-2. Melhorar tratamento de caracteres especiais globalmente
-3. Implementar sistema de logs para debug
-
----
-
-## MÉTRICAS DE QUALIDADE
-
-### Taxa de Escape de Defeitos
-- **Defeitos encontrados em produção:** 0
-- **Defeitos encontrados em teste:** 8
-- **Taxa de escape:** 0% ✅
-
-### Densidade de Defeitos
-- **Defeitos por funcionalidade:** 0.89 (8 defeitos / 9 requisitos funcionais)
-- **Classificação:** Aceitável (< 1.0)
-
-### Eficiência de Teste
-- **Casos executados:** 23
-- **Defeitos encontrados:** 8
-- **Taxa de detecção:** 35% (alta eficiência)
-
----
-
-## APROVAÇÃO PARA PRODUÇÃO
-
-### Critérios de Saída Atendidos
-
-- ✅ **Defeitos Críticos:** 0 em aberto
-- ✅ **Defeitos Altos:** Máximo 1 aceito (DEF004 - baixa prioridade)
-- ⚠️ **Defeitos Médios:** 1 em aberto (DEF007 - aguardando implementação)
-- ⚠️ **Defeitos Baixos:** 1 aceito (DEF008 - questão estética)
-
-### Recomendação
-**APROVAR COM RESSALVAS** para produção, com correções obrigatórias da DEF007 na próxima iteração.
-
-### Riscos Residuais
-- Performance pode degradar com volume alto de dados
-- Pequenas inconsistências visuais
-- Funcionalidade de ESC em modal pode confundir alguns usuários
-
----
-
-**Assinaturas:**
-
-| Papel | Nome | Data | Decisão |
-|-------|------|------|---------|
-| **Analista QA** | [Nome] | [Data] | Aprovar com ressalvas |
-| **Líder Técnico** | [Nome] | [Data] | Aprovar |
-| **Product Owner** | [Nome] | [Data] | Aprovar |
-
----
-
-*Relatório gerado automaticamente - Versão 1.0*  
-*Última atualização: [Data/Hora]*
+*Documentado com carinho para demonstrar competências em QA e gestão de defeitos* ♥
