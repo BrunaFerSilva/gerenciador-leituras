@@ -1,9 +1,20 @@
 // Gerenciador de Leituras - Script Principal
 class BookManager {
+    // Constantes da classe
+    static STORAGE_KEY = 'readingManagerBooks';
+    static VIEWS = {
+        ALL: 'all',
+        TO_READ: 'to-read',
+        READ: 'read'
+    };
+    static ALERT_DURATION = 4000;
+    static ANIMATION_DURATION = 300;
+
     constructor() {
         this.books = [];
-        this.currentView = 'all';
+        this.currentView = BookManager.VIEWS.ALL;
         this.editingBookId = null;
+        this.searchTerm = '';
         this.init();
     }
 
@@ -16,68 +27,72 @@ class BookManager {
 
     // Carrega livros do localStorage
     loadBooks() {
-        const savedBooks = localStorage.getItem('readingManagerBooks');
-        if (savedBooks) {
-            this.books = JSON.parse(savedBooks);
+        try {
+            const savedBooks = localStorage.getItem(BookManager.STORAGE_KEY);
+            if (savedBooks) {
+                this.books = JSON.parse(savedBooks);
+                this.validateBooksData();
+            }
+        } catch (error) {
+            console.error('Erro ao carregar livros:', error);
+            this.books = [];
         }
+    }
+
+    // Valida integridade dos dados carregados
+    validateBooksData() {
+        this.books = this.books.filter(book => 
+            book && 
+            typeof book.title === 'string' && 
+            typeof book.author === 'string' &&
+            typeof book.id === 'string'
+        );
     }
 
     // Salva livros no localStorage
     saveBooks() {
-        localStorage.setItem('readingManagerBooks', JSON.stringify(this.books));
+        try {
+            localStorage.setItem(BookManager.STORAGE_KEY, JSON.stringify(this.books));
+        } catch (error) {
+            console.error('Erro ao salvar livros:', error);
+            this.showAlert('Erro ao salvar dados', 'error');
+        }
     }
+
+    // Dados dos livros iniciais
+    static INITIAL_BOOKS_DATA = [
+        { title: "Lessons Learned in Software Testing", author: "Cem Kaner e James Marcus Bach" },
+        { title: "The Art of Software Testing", author: "Glenford Myers" },
+        { title: "Explore It!: Reduce Risk and Increase Confidence with Exploratory Testing", author: "Elisabeth Hendrickson" },
+        { title: "Agile Testing Condensed", author: "Lisa Crispin and Janet Gregory" },
+        { title: "Análise De Riscos Em Projetos De Teste De Software", author: "Emerson Rios" },
+        { title: "Taking Testing Seriously: The Rapid Software Testing Approach", author: "James Bach e Michael Bolton" }
+    ];
 
     // Adiciona livros iniciais se não houver livros salvos
     addInitialBooks() {
         if (this.books.length === 0) {
-            const initialBooks = [
-                {
-                    id: this.generateId(),
-                    title: "Lessons Learned in Software Testing",
-                    author: "Cem Kaner e James Marcus Bach",
-                    isRead: false,
-                    dateAdded: new Date().toISOString()
-                },
-                {
-                    id: this.generateId(),
-                    title: "The Art of Software Testing",
-                    author: "Glenford Myers",
-                    isRead: false,
-                    dateAdded: new Date().toISOString()
-                },
-                {
-                    id: this.generateId(),
-                    title: "Explore It!: Reduce Risk and Increase Confidence with Exploratory Testing",
-                    author: "Elisabeth Hendrickson",
-                    isRead: false,
-                    dateAdded: new Date().toISOString()
-                },
-                {
-                    id: this.generateId(),
-                    title: "Agile Testing Condensed",
-                    author: "Lisa Crispin and Janet Gregory",
-                    isRead: false,
-                    dateAdded: new Date().toISOString()
-                },
-                {
-                    id: this.generateId(),
-                    title: "Análise De Riscos Em Projetos De Teste De Software",
-                    author: "Emerson Rios",
-                    isRead: false,
-                    dateAdded: new Date().toISOString()
-                },
-                {
-                    id: this.generateId(),
-                    title: "Taking Testing Seriously: The Rapid Software Testing Approach",
-                    author: "James Bach e Michael Bolton",
-                    isRead: false,
-                    dateAdded: new Date().toISOString()
-                }
-            ];
-
-            this.books = initialBooks;
+            this.books = this.createInitialBooks();
             this.saveBooks();
         }
+    }
+
+    // Cria livros iniciais a partir dos dados
+    createInitialBooks() {
+        return BookManager.INITIAL_BOOKS_DATA.map(bookData => 
+            this.createBookObject(bookData.title, bookData.author)
+        );
+    }
+
+    // Factory method para criação de objetos livro
+    createBookObject(title, author, isRead = false) {
+        return {
+            id: this.generateId(),
+            title: title.trim(),
+            author: author.trim(),
+            isRead,
+            dateAdded: new Date().toISOString()
+        };
     }
 
     // Gera um ID único para os livros
@@ -92,9 +107,9 @@ class BookManager {
         bookForm.addEventListener('submit', (e) => this.handleFormSubmit(e));
 
         // Botões de visualização
-        document.getElementById('show-all').addEventListener('click', () => this.setView('all'));
-        document.getElementById('show-to-read').addEventListener('click', () => this.setView('to-read'));
-        document.getElementById('show-read').addEventListener('click', () => this.setView('read'));
+        document.getElementById('show-all').addEventListener('click', () => this.setView(BookManager.VIEWS.ALL));
+        document.getElementById('show-to-read').addEventListener('click', () => this.setView(BookManager.VIEWS.TO_READ));
+        document.getElementById('show-read').addEventListener('click', () => this.setView(BookManager.VIEWS.READ));
 
         // Botão limpar tudo
         document.getElementById('clear-all').addEventListener('click', () => this.clearAllBooks());
@@ -150,29 +165,41 @@ class BookManager {
 
     // Adiciona um novo livro
     addBook(title, author) {
-        // Verificar se o livro já existe
-        const existingBook = this.books.find(book => 
-            book.title.toLowerCase() === title.toLowerCase() && 
-            book.author.toLowerCase() === author.toLowerCase()
-        );
+        // Validar entrada
+        const validationError = this.validateBookInput(title, author);
+        if (validationError) {
+            this.showAlert(validationError, 'error');
+            return;
+        }
 
-        if (existingBook) {
+        // Verificar duplicatas
+        if (this.isDuplicateBook(title, author)) {
             this.showAlert('Este livro já está na sua lista!', 'warning');
             return;
         }
 
-        const newBook = {
-            id: this.generateId(),
-            title,
-            author,
-            isRead: false,
-            dateAdded: new Date().toISOString()
-        };
-
+        const newBook = this.createBookObject(title, author);
         this.books.push(newBook);
         this.saveBooks();
         this.updateDisplay();
         this.showAlert('Livro adicionado com sucesso!', 'success');
+    }
+
+    // Valida entrada de dados
+    validateBookInput(title, author) {
+        if (!title?.trim()) return 'Título é obrigatório';
+        if (!author?.trim()) return 'Autor é obrigatório';
+        if (title.trim().length > 200) return 'Título muito longo (máx. 200 caracteres)';
+        if (author.trim().length > 100) return 'Nome do autor muito longo (máx. 100 caracteres)';
+        return null;
+    }
+
+    // Verifica se é livro duplicado
+    isDuplicateBook(title, author) {
+        return this.books.some(book => 
+            book.title.toLowerCase() === title.toLowerCase() && 
+            book.author.toLowerCase() === author.toLowerCase()
+        );
     }
 
     // Atualiza um livro existente
@@ -284,13 +311,13 @@ class BookManager {
         // Atualizar título da lista
         const listTitle = document.getElementById('list-title');
         switch(view) {
-            case 'all':
+            case BookManager.VIEWS.ALL:
                 listTitle.textContent = 'Todos os Livros';
                 break;
-            case 'to-read':
+            case BookManager.VIEWS.TO_READ:
                 listTitle.textContent = 'Livros Para Ler';
                 break;
-            case 'read':
+            case BookManager.VIEWS.READ:
                 listTitle.textContent = 'Livros Lidos';
                 break;
         }
@@ -310,10 +337,10 @@ class BookManager {
         
         // Filtrar por visualização
         switch(this.currentView) {
-            case 'read':
+            case BookManager.VIEWS.READ:
                 filteredBooks = filteredBooks.filter(book => book.isRead);
                 break;
-            case 'to-read':
+            case BookManager.VIEWS.TO_READ:
                 filteredBooks = filteredBooks.filter(book => !book.isRead);
                 break;
         }
@@ -437,75 +464,77 @@ class BookManager {
         document.getElementById('modal').classList.remove('show');
     }
 
+    // Configuração de alertas
+    static ALERT_CONFIG = {
+        success: { icon: 'fa-check-circle', color: 'linear-gradient(135deg, #68d391, #38b2ac)' },
+        error: { icon: 'fa-exclamation-circle', color: 'linear-gradient(135deg, #fc8181, #f56565)' },
+        warning: { icon: 'fa-exclamation-triangle', color: 'linear-gradient(135deg, #f6ad55, #ed8936)' },
+        info: { icon: 'fa-info-circle', color: 'linear-gradient(135deg, #63b3ed, #4299e1)' }
+    };
+
     // Mostra alertas temporários
     showAlert(message, type = 'info') {
-        // Remover alertas existentes
-        const existingAlert = document.querySelector('.alert');
-        if (existingAlert) {
-            existingAlert.remove();
-        }
+        this.removeExistingAlert();
         
+        const alert = this.createAlertElement(message, type);
+        document.body.appendChild(alert);
+        
+        setTimeout(() => this.removeAlert(alert), BookManager.ALERT_DURATION);
+    }
+
+    // Remove alertas existentes
+    removeExistingAlert() {
+        const existingAlert = document.querySelector('.alert');
+        existingAlert?.remove();
+    }
+
+    // Cria elemento de alerta
+    createAlertElement(message, type) {
         const alert = document.createElement('div');
         alert.className = `alert alert-${type}`;
         alert.innerHTML = `
             <div class="alert-content">
                 <i class="fas ${this.getAlertIcon(type)}"></i>
-                <span>${message}</span>
+                <span>${this.escapeHtml(message)}</span>
             </div>
         `;
         
-        // Adicionar estilos do alerta
-        alert.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: ${this.getAlertColor(type)};
-            color: white;
-            padding: 15px 20px;
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            z-index: 1001;
-            animation: slideIn 0.3s ease-out;
-            max-width: 400px;
-            backdrop-filter: blur(10px);
-        `;
-        
-        const alertContent = alert.querySelector('.alert-content');
-        alertContent.style.cssText = `
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        `;
-        
-        document.body.appendChild(alert);
-        
-        // Remover após 4 segundos
-        setTimeout(() => {
-            alert.style.animation = 'slideOut 0.3s ease-in forwards';
-            setTimeout(() => alert.remove(), 300);
-        }, 4000);
+        Object.assign(alert.style, this.getAlertStyles(type));
+        return alert;
+    }
+
+    // Estilos do alerta
+    getAlertStyles(type) {
+        return {
+            position: 'fixed',
+            top: '20px',
+            right: '20px',
+            background: this.getAlertColor(type),
+            color: 'white',
+            padding: '15px 20px',
+            borderRadius: '12px',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
+            zIndex: '1001',
+            animation: 'slideIn 0.3s ease-out',
+            maxWidth: '400px',
+            backdropFilter: 'blur(10px)'
+        };
+    }
+
+    // Remove alerta com animação
+    removeAlert(alert) {
+        alert.style.animation = 'slideOut 0.3s ease-in forwards';
+        setTimeout(() => alert.remove(), BookManager.ANIMATION_DURATION);
     }
 
     // Retorna o ícone do alerta baseado no tipo
     getAlertIcon(type) {
-        const icons = {
-            success: 'fa-check-circle',
-            error: 'fa-exclamation-circle',
-            warning: 'fa-exclamation-triangle',
-            info: 'fa-info-circle'
-        };
-        return icons[type] || icons.info;
+        return BookManager.ALERT_CONFIG[type]?.icon || BookManager.ALERT_CONFIG.info.icon;
     }
 
     // Retorna a cor do alerta baseado no tipo
     getAlertColor(type) {
-        const colors = {
-            success: 'linear-gradient(135deg, #68d391, #38b2ac)',
-            error: 'linear-gradient(135deg, #fc8181, #f56565)',
-            warning: 'linear-gradient(135deg, #f6ad55, #ed8936)',
-            info: 'linear-gradient(135deg, #63b3ed, #4299e1)'
-        };
-        return colors[type] || colors.info;
+        return BookManager.ALERT_CONFIG[type]?.color || BookManager.ALERT_CONFIG.info.color;
     }
 
     // Escapa HTML para prevenir XSS

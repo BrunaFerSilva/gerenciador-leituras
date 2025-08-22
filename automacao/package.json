@@ -1,0 +1,89 @@
+{
+  "name": "gerenciador-leituras-tests",
+  "version": "1.0.0",
+  "description": "Automação de testes para o Sistema Gerenciador de Leituras",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:e2e": "playwright test",
+    "test:performance": "node tests/performance/run-performance-tests.js load",
+    "test:performance:full": "node tests/performance/run-performance-tests.js full",
+    "test:performance:stress": "node tests/performance/run-performance-tests.js scenario stress",
+    "test:performance:browser": "node tests/performance/run-performance-tests.js browser",
+    "test:load": "node tests/load/data-loader.js",
+    "test:all": "npm run test && npm run test:e2e && npm run test:performance",
+    "setup": "npm install && npx playwright install",
+    "report": "npm run test:coverage && npm run test:e2e -- --reporter=html && npm run test:performance:full"
+  },
+  "keywords": [
+    "testing",
+    "automation",
+    "qa",
+    "jest",
+    "playwright",
+    "k6",
+    "performance",
+    "load-testing"
+  ],
+  "author": "QA Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@playwright/test": "^1.40.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "setupFilesAfterEnv": ["<rootDir>/tests/setup/jest.setup.js"],
+    "collectCoverageFrom": [
+      "../script.js",
+      "!**/node_modules/**",
+      "!**/tests/**"
+    ],
+    "coverageDirectory": "coverage",
+    "coverageReporters": ["text", "lcov", "html"],
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "functions": 85,
+        "lines": 85,
+        "statements": 85
+      }
+    }
+  },
+  "playwright": {
+    "testDir": "./tests/e2e",
+    "timeout": 30000,
+    "fullyParallel": true,
+    "forbidOnly": true,
+    "retries": 2,
+    "workers": 4,
+    "reporter": [["html", { "outputFolder": "test-results/html" }]],
+    "use": {
+      "baseURL": "file://" + __dirname + "/../index.html",
+      "trace": "on-first-retry",
+      "screenshot": "only-on-failure"
+    },
+    "projects": [
+      {
+        "name": "chromium",
+        "use": { "...devices['Desktop Chrome']" }
+      },
+      {
+        "name": "firefox",
+        "use": { "...devices['Desktop Firefox']" }
+      },
+      {
+        "name": "webkit",
+        "use": { "...devices['Desktop Safari']" }
+      },
+      {
+        "name": "mobile-chrome",
+        "use": { "...devices['Pixel 5']" }
+      }
+    ]
+  }
+}
